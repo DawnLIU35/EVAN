@@ -29,7 +29,7 @@ def is_correct(batch: DataProto) -> np.ndarray:
     return np.asarray(batch.non_tensor_batch["accuracy"], dtype=np.float32) > 0
 
 
-class RayEANTrainer(RayPPOTrainer):
+class RayEVANTrainer(RayPPOTrainer):
     """DAPO trainer that appends online evidence-ablated negatives to the actor update."""
 
     def _compute_log_probs(self, batch: DataProto, timing_raw: dict, name: str) -> tuple[DataProto, torch.Tensor]:
@@ -47,14 +47,14 @@ class RayEANTrainer(RayPPOTrainer):
     def _generate_ablated_rollouts(self, batch: DataProto, prompt_indices: list[int], timing_raw: dict) -> DataProto:
         prompts = batch[prompt_indices]
         prompts.non_tensor_batch["raw_prompt"] = prompts.non_tensor_batch.pop("adv_raw_prompt")
-        gen_batch = self._get_gen_batch(prompts).repeat(repeat_times=self.config.ean.rollout_n, interleave=True)
+        gen_batch = self._get_gen_batch(prompts).repeat(repeat_times=self.config.evan.rollout_n, interleave=True)
         size = len(gen_batch)
         gen_batch.padding(-size % len(self.async_rollout_manager.agent_loop_workers), padding_candidate="last")
-        with marked_timer("ean_gen", timing_raw, "red"):
+        with marked_timer("evan_gen", timing_raw, "red"):
             output = self.async_rollout_manager.generate_sequences(gen_batch)[:size]
         for key in ("uid", "data_source", "reward_model", "extra_info"):
             output.non_tensor_batch[key] = gen_batch.non_tensor_batch[key][:size].copy()
-        with marked_timer("ean_reward", timing_raw, "yellow"):
+        with marked_timer("evan_reward", timing_raw, "yellow"):
             _, reward_extra_info = compute_reward(output, self.reward_fn)
         output.non_tensor_batch.update({k: np.array(v) for k, v in reward_extra_info.items()})
         return output
@@ -71,7 +71,7 @@ class RayEANTrainer(RayPPOTrainer):
         correct = is_correct(batch)
         with_image = [rows[0] for rows in groups.values() if ablated_prompts[rows[0]] is not None]
         prompt_indices = [index for index in with_image if correct[groups[uids[index]]].any()]
-        metrics["ean/num_prompts_with_ablated_image"] = len(with_image)
+        metrics["evan/num_prompts_with_ablated_image"] = len(with_image)
         if not prompt_indices:
             return batch
 
@@ -85,8 +85,8 @@ class RayEANTrainer(RayPPOTrainer):
             wrong = [i for i in rollout_groups[uids[index]] if not rollout_correct[i]]
             if wrong:
                 picked.append(int(np.random.choice(np.asarray(wrong, dtype=np.int64))))
-        metrics["ean/num_ablated_rollouts"] = len(rollouts)
-        metrics["ean/num_candidates"] = len(picked)
+        metrics["evan/num_ablated_rollouts"] = len(rollouts)
+        metrics["evan/num_candidates"] = len(picked)
         if not picked:
             return batch
 
@@ -116,7 +116,7 @@ class RayEANTrainer(RayPPOTrainer):
             },
             non_tensors={"multi_modal_inputs": batch.non_tensor_batch["multi_modal_inputs"][clean_rows]},
         )
-        candidates, _ = self._compute_log_probs(candidates, timing_raw, "ean_old_log_prob")
+        candidates, _ = self._compute_log_probs(candidates, timing_raw, "evan_old_log_prob")
 
         clean_logp = token_mean(batch.batch["old_log_probs"], batch.batch["response_mask"])
         clean_length = batch.batch["response_mask"].sum(dim=-1)
@@ -135,14 +135,14 @@ class RayEANTrainer(RayPPOTrainer):
             if candidate_length[position] > clean_length[nonempty].max():
                 continue
             num_length_pass += 1
-            advantage = -clean_advantage[groups[uid]].abs().min() * self.config.ean.advantage_scale
+            advantage = -clean_advantage[groups[uid]].abs().min() * self.config.evan.advantage_scale
             if not torch.isfinite(advantage) or advantage >= 0:
                 continue
             keep.append(position)
             advantages.append(advantage.item())
-        metrics["ean/logp_filter_pass_ratio"] = num_logp_pass / len(picked)
-        metrics["ean/length_filter_pass_ratio"] = num_length_pass / max(num_logp_pass, 1)
-        metrics["ean/num_appended"] = len(keep)
+        metrics["evan/logp_filter_pass_ratio"] = num_logp_pass / len(picked)
+        metrics["evan/length_filter_pass_ratio"] = num_length_pass / max(num_logp_pass, 1)
+        metrics["evan/num_appended"] = len(keep)
         if not keep:
             return batch
 
@@ -277,7 +277,7 @@ class RayEANTrainer(RayPPOTrainer):
                             norm_adv_by_std_in_grpo=self.config.algorithm.get("norm_adv_by_std_in_grpo", True),
                         )
 
-                    with marked_timer("ean", timing_raw, "cyan"):
+                    with marked_timer("evan", timing_raw, "cyan"):
                         actor_batch = self._append_ablated_negatives(batch, metrics, timing_raw)
 
                     with marked_timer("update_actor", timing_raw, "red"):

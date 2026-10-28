@@ -18,8 +18,8 @@ data:
   max_pixels: 1003520
   format_prompt: null
   custom_cls:
-    path: pkg://ean.dataset
-    name: EANDataset
+    path: pkg://evan.dataset
+    name: EVANDataset
 
 actor_rollout_ref:
   model:
@@ -47,7 +47,7 @@ actor_rollout_ref:
       do_sample: True
 
 custom_reward_function:
-  path: pkg://ean.reward
+  path: pkg://evan.reward
   name: compute_score
 
 reward_model:
@@ -61,13 +61,13 @@ algorithm:
     metric: accuracy
     max_num_gen_batches: 10
 
-ean:
+evan:
   rollout_n: 2
   advantage_scale: 0.5
 
 trainer:
-  project_name: ean
-  experiment_name: ean
+  project_name: evan
+  experiment_name: evan
   n_gpus_per_node: 4
   nnodes: 1
   total_training_steps: 300

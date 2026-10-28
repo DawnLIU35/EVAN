@@ -22,11 +22,11 @@ University of Maryland, College Park
 
 ## 🔥 News
 
-- **[2026/10]** We release the code and the [EAN-3B](https://huggingface.co/DawnLiu/EAN-3B), [EAN-7B](https://huggingface.co/DawnLiu/EAN-7B), and [EAN-8B](https://huggingface.co/DawnLiu/EAN-8B) checkpoints.
+- **[2026/10]** We release the code and the [EVAN-3B](https://huggingface.co/DawnLiu/EVAN-3B), [EVAN-7B](https://huggingface.co/DawnLiu/EVAN-7B), and [EVAN-8B](https://huggingface.co/DawnLiu/EVAN-8B) checkpoints.
 
 ## 💡 Overview
 
-RLVR rewards typically check only the final answer, not whether it came from the image or from language priors and dataset shortcuts. Models can thus learn to underuse visual evidence. Suppressing these shortcuts requires negatives that are plausible to the model yet expose them. **EAN** (**E**vidence-**A**blated **N**egatives) masks the visual evidence a question needs, lets the current policy answer without it, and penalizes plausible wrong answers under the clean image:
+RLVR rewards typically check only the final answer, not whether it came from the image or from language priors and dataset shortcuts. Models can thus learn to underuse visual evidence. Suppressing these shortcuts requires negatives that are plausible to the model yet expose them. **EVAN** (**EV**idence-**A**blated **N**egatives) masks the visual evidence a question needs, lets the current policy answer without it, and penalizes plausible wrong answers under the clean image:
 
 1. **Visually dependent data.** Each question is scored by *scaled image information gain* (sIIG), the relative drop in response likelihood when the image is replaced by a blank one. RankMix selects high-sIIG questions to ablate, preserving category diversity.
 2. **Evidence-ablated images.** Blacking out the patches with the largest absolute sIIG gradient removes query-critical evidence. Without it, the model more often falls back on language priors.
@@ -49,37 +49,37 @@ RLVR rewards typically check only the final answer, not whether it came from the
 
 ## 📊 Results
 
-Accuracy (%) with sampling at temperature 1.0, from Table 1 of the paper. EAN uses the same data and training recipe as the DAPO baseline.
+Accuracy (%) with sampling at temperature 1.0, from Table 1 of the paper. EVAN uses the same data and training recipe as the DAPO baseline.
 
 | Model | Geo3K | MathVista | MathVerse | We-Math | DynaMath | MathVision | MMK12 | MMMU-Pro | LogicVista | Avg. |
 | :--- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
 | Qwen2.5-VL-3B | 19.4 | 46.3 | 33.5 | 29.9 | 40.4 | 18.2 | 36.3 | 19.8 | 32.1 | 30.7 |
 | + DAPO | 38.8 | 62.4 | 60.4 | 60.5 | 59.3 | 26.5 | **72.2** | 29.9 | 43.0 | 50.3 |
-| **+ EAN** | **39.9** | **62.7** | **62.8** | **64.6** | **60.6** | **27.6** | 71.5 | **31.0** | **43.3** | **51.6** |
+| **+ EVAN** | **39.9** | **62.7** | **62.8** | **64.6** | **60.6** | **27.6** | 71.5 | **31.0** | **43.3** | **51.6** |
 | Qwen2.5-VL-7B | 36.1 | 63.9 | 38.6 | 46.6 | 56.1 | 18.6 | 43.4 | 25.9 | 42.8 | 41.3 |
 | + DAPO | 45.5 | 66.2 | **69.2** | 68.4 | 65.8 | 29.0 | 81.9 | 37.0 | 45.8 | 56.5 |
-| **+ EAN** | **46.0** | **69.0** | 69.1 | **69.7** | **66.5** | **31.3** | **82.2** | **38.8** | **48.8** | **57.9** |
+| **+ EVAN** | **46.0** | **69.0** | 69.1 | **69.7** | **66.5** | **31.3** | **82.2** | **38.8** | **48.8** | **57.9** |
 | Qwen3-VL-8B | 65.2 | 68.7 | 69.4 | 77.2 | 73.4 | 38.0 | 69.1 | 40.3 | 61.3 | 62.5 |
 | + DAPO | 74.6 | 71.9 | 84.0 | 83.9 | 76.9 | 56.7 | 84.1 | **52.3** | 62.4 | 71.9 |
-| **+ EAN** | **76.6** | **74.9** | **85.0** | **84.9** | **77.6** | **57.0** | **85.0** | 52.0 | **63.6** | **73.0** |
+| **+ EVAN** | **76.6** | **74.9** | **85.0** | **84.9** | **77.6** | **57.0** | **85.0** | 52.0 | **63.6** | **73.0** |
 
-EAN also has the best average at each scale among the open-source reasoning LMMs we compare with (e.g. VPPO-7B 57.0, VPPO-8B 71.2). See the paper for all baselines and ablations.
+EVAN also has the best average at each scale among the open-source reasoning LMMs we compare with (e.g. VPPO-7B 57.0, VPPO-8B 71.2). See the paper for all baselines and ablations.
 
 ## 🤗 Models
 
 | Model | Base model | License |
 | :- | :- | :- |
-| [🤗 EAN-3B](https://huggingface.co/DawnLiu/EAN-3B) | [Qwen2.5-VL-3B-Instruct](https://huggingface.co/Qwen/Qwen2.5-VL-3B-Instruct) | Qwen Research License (non-commercial) |
-| [🤗 EAN-7B](https://huggingface.co/DawnLiu/EAN-7B) | [Qwen2.5-VL-7B-Instruct](https://huggingface.co/Qwen/Qwen2.5-VL-7B-Instruct) | Apache 2.0 |
-| [🤗 EAN-8B](https://huggingface.co/DawnLiu/EAN-8B) | [Qwen3-VL-8B-Instruct](https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct) | Apache 2.0 |
+| [🤗 EVAN-3B](https://huggingface.co/DawnLiu/EVAN-3B) | [Qwen2.5-VL-3B-Instruct](https://huggingface.co/Qwen/Qwen2.5-VL-3B-Instruct) | Qwen Research License (non-commercial) |
+| [🤗 EVAN-7B](https://huggingface.co/DawnLiu/EVAN-7B) | [Qwen2.5-VL-7B-Instruct](https://huggingface.co/Qwen/Qwen2.5-VL-7B-Instruct) | Apache 2.0 |
+| [🤗 EVAN-8B](https://huggingface.co/DawnLiu/EVAN-8B) | [Qwen3-VL-8B-Instruct](https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct) | Apache 2.0 |
 
 ## 🔧 Installation
 
 ```bash
-git clone https://github.com/DawnLIU35/EAN.git
-cd EAN
-conda create -n ean python=3.12 -y
-conda activate ean
+git clone https://github.com/DawnLIU35/EVAN.git
+cd EVAN
+conda create -n evan python=3.12 -y
+conda activate evan
 pip install -r requirements.txt
 pip install https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.1/flash_attn-2.8.1+cu12torch2.8cxx11abiFALSE-cp312-cp312-linux_x86_64.whl
 pip install -e .
@@ -93,7 +93,7 @@ The code is built on [verl](https://github.com/volcengine/verl). The `verl/` fol
 bash scripts/prepare_data.sh
 ```
 
-This builds `data/virl39k/virl39k_ean.json` (training) and `data/mmk12/mmk12_test.json` (validation, used only for monitoring). The steps are:
+This builds `data/virl39k/virl39k_evan.json` (training) and `data/mmk12/mmk12_test.json` (validation, used only for monitoring). The steps are:
 
 | Step | Script | What it does |
 | :- | :- | :- |
@@ -138,14 +138,14 @@ bash scripts/train_qwen3_vl_8b.sh
 > [!NOTE]
 > The scripts run on 4 GPUs and log to Weights & Biases, so run `wandb login` first.
 
-Shared settings are in [`ean/config/ean_trainer.yaml`](ean/config/ean_trainer.yaml) on top of verl's defaults, and per-model settings are in the scripts.
+Shared settings are in [`evan/config/evan_trainer.yaml`](evan/config/evan_trainer.yaml) on top of verl's defaults, and per-model settings are in the scripts.
 
-Checkpoints are saved to `checkpoints/ean/<experiment_name>`. To convert one to a Hugging Face model:
+Checkpoints are saved to `checkpoints/evan/<experiment_name>`. To convert one to a Hugging Face model:
 
 ```bash
 python -m verl.model_merger merge --backend fsdp \
-    --local_dir checkpoints/ean/ean-qwen2.5-vl-3b/global_step_300/actor \
-    --target_dir checkpoints/ean-qwen2.5-vl-3b
+    --local_dir checkpoints/evan/evan-qwen2.5-vl-3b/global_step_300/actor \
+    --target_dir checkpoints/evan-qwen2.5-vl-3b
 ```
 
 We evaluate with the [PAPO-Eval](https://github.com/xhguo7/PAPO-Eval) protocol: exact-match accuracy with sampling at temperature 1.0.
@@ -153,13 +153,13 @@ We evaluate with the [PAPO-Eval](https://github.com/xhguo7/PAPO-Eval) protocol: 
 ## 📂 Code Structure
 
 ```
-ean/
-├── main.py         # entry point (python -m ean.main)
+evan/
+├── main.py         # entry point (python -m evan.main)
 ├── trainer.py      # DAPO loop + evidence-ablated rollouts, filtering, and bounded negative advantages
 ├── actor.py        # actor update with the appended negatives
 ├── dataset.py      # training data with evidence-ablated images
 ├── reward.py       # 0.9 · accuracy + 0.1 · format
-└── config/ean_trainer.yaml
+└── config/evan_trainer.yaml
 preprocess/         # sIIG scoring, RankMix selection, and evidence ablation
 scripts/            # data preparation and training scripts
 verl/               # verl

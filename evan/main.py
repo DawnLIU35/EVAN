@@ -9,13 +9,13 @@ from verl.trainer.constants_ppo import get_ppo_ray_runtime_env
 from verl.utils.device import auto_set_device
 
 
-@hydra.main(config_path="config", config_name="ean_trainer", version_base=None)
+@hydra.main(config_path="config", config_name="evan_trainer", version_base=None)
 def main(config):
     auto_set_device(config)
-    run_ean(config)
+    run_evan(config)
 
 
-def run_ean(config) -> None:
+def run_evan(config) -> None:
     if not ray.is_initialized():
         ray_init_kwargs = config.ray_kwargs.get("ray_init", {})
         runtime_env = OmegaConf.merge(get_ppo_ray_runtime_env(), ray_init_kwargs.get("runtime_env", {}))
@@ -41,8 +41,8 @@ class TaskRunner:
         from verl.utils import hf_processor, hf_tokenizer
         from verl.utils.fs import copy_to_local
 
-        from ean.trainer import RayEANTrainer
-        from ean.worker import EANActorRolloutRefWorker
+        from evan.trainer import RayEVANTrainer
+        from evan.worker import EVANActorRolloutRefWorker
 
         print(f"TaskRunner hostname: {socket.gethostname()}, PID: {os.getpid()}")
         pprint(OmegaConf.to_container(config, resolve=True))
@@ -53,17 +53,17 @@ class TaskRunner:
         tokenizer = hf_tokenizer(local_path, trust_remote_code=trust_remote_code)
         processor = hf_processor(local_path, trust_remote_code=trust_remote_code, use_fast=True)
 
-        role_worker_mapping = {Role.ActorRollout: ray.remote(EANActorRolloutRefWorker)}
+        role_worker_mapping = {Role.ActorRollout: ray.remote(EVANActorRolloutRefWorker)}
         mapping = {Role.ActorRollout: "global_pool"}
         if config.actor_rollout_ref.actor.use_kl_loss:
-            role_worker_mapping[Role.RefPolicy] = ray.remote(EANActorRolloutRefWorker)
+            role_worker_mapping[Role.RefPolicy] = ray.remote(EVANActorRolloutRefWorker)
             mapping[Role.RefPolicy] = "global_pool"
         resource_pool_manager = ResourcePoolManager(
             resource_pool_spec={"global_pool": [config.trainer.n_gpus_per_node] * config.trainer.nnodes},
             mapping=mapping,
         )
 
-        trainer = RayEANTrainer(
+        trainer = RayEVANTrainer(
             config=config,
             tokenizer=tokenizer,
             processor=processor,

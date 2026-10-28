@@ -7,7 +7,7 @@ from verl.utils.dataset.rl_dataset import RLHFDataset
 from .prompt import load_format_prompt
 
 
-class EANDataset(RLHFDataset):
+class EVANDataset(RLHFDataset):
     """RLHF dataset that renders the reasoning prompt and attaches evidence-ablated images (``adv_image``)."""
 
     def __init__(self, data_files, tokenizer, config, processor=None, max_samples: int = -1):

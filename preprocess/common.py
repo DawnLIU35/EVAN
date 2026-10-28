@@ -6,8 +6,8 @@ import torch
 from PIL import Image
 from transformers import AutoModelForImageTextToText, AutoProcessor
 
-from ean.prompt import load_format_prompt
-from ean.reward import accuracy_reward, normalize_response
+from evan.prompt import load_format_prompt
+from evan.reward import accuracy_reward, normalize_response
 
 FORMAT_PROMPT = load_format_prompt()
 

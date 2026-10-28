@@ -28,7 +28,7 @@ def add_negative_seq_mean(loss, subset_loss, rows, loss_agg_mode):
     return loss + (subset_loss(rows, "seq-mean-token-mean") - token_mean)
 
 
-class EANDataParallelPPOActor(DataParallelPPOActor):
+class EVANDataParallelPPOActor(DataParallelPPOActor):
     @GPUMemoryLogger(role="dp actor", logger=logger)
     def update_policy(self, data: DataProto):
         self.actor_module.train()

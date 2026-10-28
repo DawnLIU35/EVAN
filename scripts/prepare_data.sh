@@ -19,4 +19,4 @@ python3 preprocess/sample_responses.py --model ${SCORER} \
     --until-correct --n 5 --max-rounds 10 --max-tokens 8196 --batch-size 512
 python3 preprocess/mask_evidence.py --model ${SCORER} \
     --input ${VIRL}/rankmix20_targets.json --base ${VIRL}/virl39k.json \
-    --output ${VIRL}/virl39k_ean.json --image-dir ${VIRL}/ablated --mask-ratio 0.5
+    --output ${VIRL}/virl39k_evan.json --image-dir ${VIRL}/ablated --mask-ratio 0.5
