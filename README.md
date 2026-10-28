@@ -2,15 +2,29 @@
 
 # Grounding Multimodal Reasoning with Evidence-Ablated Negatives
 
-**NeurIPS 2026**
+[![NeurIPS 2026](https://img.shields.io/badge/NeurIPS-2026-6f42c1.svg)](https://neurips.cc/Conferences/2026)
+[![Models](https://img.shields.io/badge/🤗%20Hugging%20Face-Models-ffc107.svg)](#-models)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.12-3776AB.svg?logo=python&logoColor=white)](https://www.python.org/)
+[![verl](https://img.shields.io/badge/Built%20on-verl-orange.svg)](https://github.com/volcengine/verl)
 
-Chenxi Liu, Tianyi Xiong, Yanshuo Chen, Heng Huang
+**Chenxi Liu, Tianyi Xiong, Yanshuo Chen, Heng Huang**
 
 University of Maryland, College Park
 
+<br>
+
+<img src="assets/evidence_ablation.png" width="760"/>
+
+<em>A clean image (left) and its evidence-ablated version (right).</em>
+
 </div>
 
-## Overview
+## 🔥 News
+
+- **[2026/10]** We release the code and the [EAN-3B](https://huggingface.co/DawnLiu/EAN-3B), [EAN-7B](https://huggingface.co/DawnLiu/EAN-7B), and [EAN-8B](https://huggingface.co/DawnLiu/EAN-8B) checkpoints.
+
+## 💡 Overview
 
 RLVR rewards typically check only the final answer, not whether it came from the image or from language priors and dataset shortcuts. Models can thus learn to underuse visual evidence. Suppressing these shortcuts requires negatives that are plausible to the model yet expose them. **EAN** (**E**vidence-**A**blated **N**egatives) masks the visual evidence a question needs, lets the current policy answer without it, and penalizes plausible wrong answers under the clean image:
 
@@ -18,13 +32,22 @@ RLVR rewards typically check only the final answer, not whether it came from the
 2. **Evidence-ablated images.** Blacking out the patches with the largest absolute sIIG gradient removes query-critical evidence. Without it, the model more often falls back on language priors.
 3. **Stable negative optimization.** During DAPO training, the policy also answers each selected question on its ablated image. A wrong answer that stays plausible under the clean image joins the clean rollout group. It is penalized under the **clean** image, where the evidence is visible, with a bounded negative advantage.
 
+<details>
+<summary><b>More examples of evidence-ablated images</b></summary>
+<br>
 <p align="center">
-  <img src="assets/evidence_ablation.png" width="720"/>
+  <img src="assets/case_counting.png" width="560"/>
   <br>
-  <em>A clean image (left) and its evidence-ablated version (right).</em>
+  <em>Counting question. Top: clean image. Bottom: evidence-ablated image.</em>
 </p>
+<p align="center">
+  <img src="assets/case_genetics.png" width="640"/>
+  <br>
+  <em>Genetics question. Top: clean image. Bottom: evidence-ablated image.</em>
+</p>
+</details>
 
-## Results
+## 📊 Results
 
 Accuracy (%) with sampling at temperature 1.0, from Table 1 of the paper. EAN uses the same data and training recipe as the DAPO baseline.
 
@@ -42,15 +65,15 @@ Accuracy (%) with sampling at temperature 1.0, from Table 1 of the paper. EAN us
 
 EAN also has the best average at each scale among the open-source reasoning LMMs we compare with (e.g. VPPO-7B 57.0, VPPO-8B 71.2). See the paper for all baselines and ablations.
 
-## Models
+## 🤗 Models
 
 | Model | Base model | License |
 | :- | :- | :- |
-| [EAN-3B](https://huggingface.co/DawnLiu/EAN-3B) | [Qwen2.5-VL-3B-Instruct](https://huggingface.co/Qwen/Qwen2.5-VL-3B-Instruct) | Qwen Research License (non-commercial) |
-| [EAN-7B](https://huggingface.co/DawnLiu/EAN-7B) | [Qwen2.5-VL-7B-Instruct](https://huggingface.co/Qwen/Qwen2.5-VL-7B-Instruct) | Apache 2.0 |
-| [EAN-8B](https://huggingface.co/DawnLiu/EAN-8B) | [Qwen3-VL-8B-Instruct](https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct) | Apache 2.0 |
+| [🤗 EAN-3B](https://huggingface.co/DawnLiu/EAN-3B) | [Qwen2.5-VL-3B-Instruct](https://huggingface.co/Qwen/Qwen2.5-VL-3B-Instruct) | Qwen Research License (non-commercial) |
+| [🤗 EAN-7B](https://huggingface.co/DawnLiu/EAN-7B) | [Qwen2.5-VL-7B-Instruct](https://huggingface.co/Qwen/Qwen2.5-VL-7B-Instruct) | Apache 2.0 |
+| [🤗 EAN-8B](https://huggingface.co/DawnLiu/EAN-8B) | [Qwen3-VL-8B-Instruct](https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct) | Apache 2.0 |
 
-## Installation
+## 🔧 Installation
 
 ```bash
 git clone https://github.com/DawnLIU35/EAN.git
@@ -64,7 +87,7 @@ pip install -e .
 
 The code is built on [verl](https://github.com/volcengine/verl). The `verl/` folder is the verl 0.7.0.dev snapshot we trained with, plus small patches for image resizing and Qwen3-VL.
 
-## Data
+## 📦 Data
 
 ```bash
 bash scripts/prepare_data.sh
@@ -75,11 +98,19 @@ This builds `data/virl39k/virl39k_ean.json` (training) and `data/mmk12/mmk12_tes
 | Step | Script | What it does |
 | :- | :- | :- |
 | 1 | `prepare_virl39k.py`, `prepare_mmk12.py` | Download [ViRL39K](https://huggingface.co/datasets/TIGER-Lab/ViRL39K) and the [MMK12 test split](https://huggingface.co/datasets/PAPOGalaxy/PAPO_MMK12_test). |
-| 2 | `sample_responses.py` | Sample 2 responses per question with Qwen3-VL-8B-Instruct. |
-| 3 | `score_siig.py` | Score sIIG = (ℓ(o \| q, I) − ℓ(o \| q, blank)) / (−ℓ(o \| q, blank) + η), averaged over responses. |
-| 4 | `select_rankmix.py` | Select 20% of the questions with RankMix. |
-| 5 | `sample_responses.py --until-correct` | Resample (5 per round, up to 10 rounds) until each selected question has a verified correct response. Questions without one get no ablated image. |
-| 6 | `mask_evidence.py` | Black out the top 50% patches by \|∂ sIIG / ∂ pixel\| and attach the images as `adv_image`. |
+| 2 | `sample_responses.py` | Sample `--n` responses per question with Qwen3-VL-8B-Instruct. |
+| 3 | `score_siig.py` | Score each question by sIIG (below), averaged over its responses. |
+| 4 | `select_rankmix.py` | Select the top `--percent` percent of questions with RankMix. |
+| 5 | `sample_responses.py --until-correct` | Resample (`--n` per round, up to `--max-rounds` rounds) until each selected question has a verified correct response. Questions without one get no ablated image. |
+| 6 | `mask_evidence.py` | Black out the top `--mask-ratio` fraction of patches by sIIG-gradient magnitude and attach the images as `adv_image`. |
+
+$$\mathrm{sIIG}(o) = \frac{\ell(o \mid q, I) - \ell(o \mid q, \varnothing)}{-\ell(o \mid q, \varnothing) + \eta}$$
+
+where $\ell$ is the log-likelihood of response $o$ to question $q$, $\varnothing$ is a blank image, and $\eta$ is a small constant.
+
+<details>
+<summary><b>Data format</b></summary>
+<br>
 
 Each training row uses the verl format, with one `<image>` placeholder per image. Image paths are relative to the JSON file, and `adv_image` only appears on the selected questions:
 
@@ -94,7 +125,9 @@ Each training row uses the verl format, with one `<image>` placeholder per image
 }
 ```
 
-## Training
+</details>
+
+## 🚀 Training
 
 ```bash
 bash scripts/train_qwen2_5_vl_3b.sh
@@ -102,19 +135,10 @@ bash scripts/train_qwen2_5_vl_7b.sh
 bash scripts/train_qwen3_vl_8b.sh
 ```
 
-The scripts run on 4 GPUs and log to Weights & Biases, so run `wandb login` first. Shared settings are in [`ean/config/ean_trainer.yaml`](ean/config/ean_trainer.yaml) on top of verl's defaults, and per-model settings are in the scripts. Any of them can be overridden on the command line:
+> [!NOTE]
+> The scripts run on 4 GPUs and log to Weights & Biases, so run `wandb login` first.
 
-```bash
-bash scripts/train_qwen2_5_vl_7b.sh trainer.n_gpus_per_node=8 trainer.logger='["console"]'
-```
-
-| Setting | Value |
-| :- | :- |
-| Algorithm | DAPO (clip 0.2 / 0.28, dynamic sampling), no KL; AdamW, lr 1e-6, weight decay 0.1, 10 warmup steps |
-| Batch | 256 prompts × 8 rollouts per step, mini-batch 32, 300 steps |
-| Max response length | 4096 (8192 for Qwen3-VL-8B) |
-| Ablated rollouts per image (`ean.rollout_n`) | 2 for 3B, 4 for 7B and Qwen3-VL-8B |
-| Negative advantage (`ean.advantage_scale`) | −0.5 · min<sub>i</sub> \|Â<sub>i</sub>\| over the clean group |
+Shared settings are in [`ean/config/ean_trainer.yaml`](ean/config/ean_trainer.yaml) on top of verl's defaults, and per-model settings are in the scripts.
 
 Checkpoints are saved to `checkpoints/ean/<experiment_name>`. To convert one to a Hugging Face model:
 
@@ -126,7 +150,7 @@ python -m verl.model_merger merge --backend fsdp \
 
 We evaluate with the [PAPO-Eval](https://github.com/xhguo7/PAPO-Eval) protocol: exact-match accuracy with sampling at temperature 1.0.
 
-## Code Structure
+## 📂 Code Structure
 
 ```
 ean/
@@ -141,6 +165,6 @@ scripts/            # data preparation and training scripts
 verl/               # verl
 ```
 
-## Acknowledgements
+## 🙏 Acknowledgements
 
 We build on [verl](https://github.com/volcengine/verl) and train on [ViRL39K](https://huggingface.co/datasets/TIGER-Lab/ViRL39K). The prompt template and the MMK12 validation split follow [PAPO](https://github.com/MikeWangWZHL/PAPO).

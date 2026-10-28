@@ -16,7 +16,7 @@ python3 preprocess/select_rankmix.py \
     --input ${VIRL}/siig.json --output ${VIRL}/rankmix20.json --percent 20
 python3 preprocess/sample_responses.py --model ${SCORER} \
     --input ${VIRL}/rankmix20.json --output ${VIRL}/rankmix20_targets.json \
-    --until-correct --n 5 --max-rounds 10 --max-tokens 8192
+    --until-correct --n 5 --max-rounds 10 --max-tokens 8196 --batch-size 512
 python3 preprocess/mask_evidence.py --model ${SCORER} \
     --input ${VIRL}/rankmix20_targets.json --base ${VIRL}/virl39k.json \
     --output ${VIRL}/virl39k_ean.json --image-dir ${VIRL}/ablated --mask-ratio 0.5
