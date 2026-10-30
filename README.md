@@ -2,6 +2,7 @@
 
 # Grounding Multimodal Reasoning with Evidence-Ablated Negatives
 
+[![arXiv](https://img.shields.io/badge/arXiv-2610.39237-b31b1b.svg)](https://arxiv.org/abs/2610.39237)
 [![NeurIPS 2026](https://img.shields.io/badge/NeurIPS-2026-6f42c1.svg)](https://neurips.cc/Conferences/2026)
 [![Models](https://img.shields.io/badge/🤗%20Hugging%20Face-Models-ffc107.svg)](#-models)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
@@ -22,7 +23,7 @@ University of Maryland, College Park
 
 ## 🔥 News
 
-- **[2026/10]** We release the code and the [EVAN-3B](https://huggingface.co/DawnLiu/EVAN-3B), [EVAN-7B](https://huggingface.co/DawnLiu/EVAN-7B), and [EVAN-8B](https://huggingface.co/DawnLiu/EVAN-8B) checkpoints.
+- **[2026/10]** We release the [paper](https://arxiv.org/abs/2610.39237), the code, and the [EVAN-3B](https://huggingface.co/DawnLiu/EVAN-3B), [EVAN-7B](https://huggingface.co/DawnLiu/EVAN-7B), and [EVAN-8B](https://huggingface.co/DawnLiu/EVAN-8B) checkpoints.
 
 ## 💡 Overview
 
@@ -63,7 +64,7 @@ Accuracy (%) with sampling at temperature 1.0, from Table 1 of the paper. EVAN u
 | + DAPO | 74.6 | 71.9 | 84.0 | 83.9 | 76.9 | 56.7 | 84.1 | **52.3** | 62.4 | 71.9 |
 | **+ EVAN** | **76.6** | **74.9** | **85.0** | **84.9** | **77.6** | **57.0** | **85.0** | 52.0 | **63.6** | **73.0** |
 
-EVAN also has the best average at each scale among the open-source reasoning LMMs we compare with (e.g. VPPO-7B 57.0, VPPO-8B 71.2). See the paper for all baselines and ablations.
+EVAN also has the best average at each scale among the open-source reasoning LMMs we compare with (e.g. VPPO-7B 57.0, VPPO-8B 71.2). See the [paper](https://arxiv.org/abs/2610.39237) for all baselines and ablations.
 
 ## 🤗 Models
 
@@ -163,6 +164,19 @@ evan/
 preprocess/         # sIIG scoring, RankMix selection, and evidence ablation
 scripts/            # data preparation and training scripts
 verl/               # verl
+```
+
+## 📝 Citation
+
+```bibtex
+@misc{liu2026grounding,
+  title         = {Grounding Multimodal Reasoning with Evidence-Ablated Negatives},
+  author        = {Chenxi Liu and Tianyi Xiong and Yanshuo Chen and Heng Huang},
+  year          = {2026},
+  eprint        = {2610.39237},
+  archivePrefix = {arXiv},
+  url           = {https://arxiv.org/abs/2610.39237},
+}
 ```
 
 ## 🙏 Acknowledgements
